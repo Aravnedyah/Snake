@@ -46,9 +46,11 @@ def message(msg,color):
 def random_spot(size):
     return round(random.randrange(0, size - 30) / 10.0) *10
 
+#simplified game ticks with function
 def next_tick():
     pg.display.update()
 
+#function to update speed 
 def update_speed(speed):
     return speed+1
 
@@ -62,9 +64,9 @@ def game_loop():
     x1=dis_width/2
     y1=dis_height/2
 
-    x1_change=0
+    x1_change=0 
     y1_change=0
-    
+      
     snake_list=[]
     snake_length=1
     #beginning speed
@@ -73,6 +75,14 @@ def game_loop():
 
     game_over=False
     game_close=False
+
+    #keybind dictionary
+    move_dict = {
+             pg.K_LEFT : [-10, 0],
+             pg.K_RIGHT: [ 10, 0],
+             pg.K_UP   : [ 0,-10],
+             pg.K_DOWN : [ 0, 10],
+             }
 
     #set x and y for first food piece
     foodx = random_spot(dis_width)
@@ -83,7 +93,7 @@ def game_loop():
 
         #if game over, game close will become false and trigger ending selection
         while game_close:
-            dis.fill(blue)
+            dis.fill(white)
             message("You lost! Press Q-Quit or C-Play Again",red)
             next_tick()
 
@@ -105,31 +115,20 @@ def game_loop():
             if event.type==pg.QUIT:
                 game_over=True
             if event.type==pg.KEYDOWN:
-                if event.key==pg.K_LEFT:
-                    x1_change=-10
-                    y1_change=0
-                elif event.key==pg.K_RIGHT:
-                    x1_change=10
-                    y1_change=0
-                elif event.key==pg.K_DOWN:
-                    x1_change=0
-                    y1_change=10
-                elif event.key==pg.K_UP:    
-                    x1_change=0
-                    y1_change=-10
-                elif event.key==pg.K_q:
-                    game_over=True
-                    game_close=False
+                movement=move_dict.get(event.key) 
+                x1_change=movement[0]
+                y1_change=movement[1]  
+          
+        #movement
+        x1+=x1_change
+        y1+=y1_change
 
         #detect out of bounds 
         if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
             game_close = True
 
-        #movement
-        x1+=x1_change
-        y1+=y1_change
-        #background color
         dis.fill(black)
+
         #create food piece on screen
         pg.draw.rect(dis, blue, [foodx, foody, 10, 10])
 
