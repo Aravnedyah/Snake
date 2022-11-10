@@ -1,3 +1,4 @@
+from cmath import rect
 import random
 import pygame as pg
 
@@ -37,11 +38,13 @@ def score(current_score):
 #initiate clock 
 clock = pg.time.Clock()
 
-#function for pop up message
+#function for pop up message. Text within centered rectangle
 def message(msg,color):
         mesg = font.render(msg, True, color)
-        dis.blit(mesg, [dis_height/3, dis_height/2])
-
+        coords = mesg.get_rect()
+        coords.center = pg.Rect(dis_width/2,dis_height/2,10,10).center
+        dis.blit(mesg, coords)
+        
 #generate random position
 def random_spot(size):
     return round(random.randrange(0, size - 30) / 10.0) *10
@@ -54,9 +57,30 @@ def next_tick():
 def update_speed(speed):
     return speed+1
 
+def menu():
+    menu_options = {
+        pg.K_SPACE : 1,
+        pg.K_v     : 2,
+    }
+    start = False
+    while not start:
+
+        dis.fill(white)
+        message('Press SPACE To Start',blue)
+        next_tick()
+        for event in pg.event.get():
+            if event.type == pg.KEYDOWN:
+                if event.key==pg.K_SPACE:
+                    start=True
+                    game_loop(1)
+            if event.type == pg.QUIT:
+                pg.quit()
+                quit()
+
+
 
 #function for whole game
-def game_loop():
+def game_loop(players):
 
     #initiate variables
 
@@ -83,10 +107,18 @@ def game_loop():
              pg.K_UP   : [ 0,-10],
              pg.K_DOWN : [ 0, 10],
              }
+    #future player 2 
+    move_dict2= {
+             pg.K_a    : [-10, 0],
+             pg.K_d    : [ 10, 0],
+             pg.K_w    : [ 0,-10],
+             pg.K_s    : [ 0, 10]
+             }
 
     #set x and y for first food piece
     foodx = random_spot(dis_width)
     foody = random_spot(dis_height)
+
 
     #loop containing game
     while not game_over:
@@ -104,7 +136,7 @@ def game_loop():
                             game_over = True
                             game_close = False
                         elif event.key == pg.K_c:
-                            game_loop()
+                            menu()
                     if event.type == pg.QUIT:
                         game_over=True
                         game_close=False
@@ -116,7 +148,7 @@ def game_loop():
                 game_over=True
             if event.type==pg.KEYDOWN:
                 movement=move_dict.get(event.key) 
-                x1_change=movement[0]
+                x1_change=movement[0]  
                 y1_change=movement[1]  
           
         #movement
@@ -180,5 +212,5 @@ def game_loop():
     quit()
 
 #call game function to begin
-game_loop()
+menu()
 
