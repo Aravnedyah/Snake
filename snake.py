@@ -235,10 +235,10 @@ def game_loop():
 def game2_loop():
     #initiate variable
     #set start point    (x1, y1 player one | x2, y2 player two)
-    x1=dis_width/2
+    x1=(dis_width/2)+10
     y1=dis_height/2
 
-    x2=dis_width/2
+    x2=(dis_width/2)-10
     y2=dis_height/2
 
     x1_change=0 
@@ -331,25 +331,23 @@ def game2_loop():
                         x2_change=m2[0]  
                         y2_change=m2[1]  
                         last2_move=[-m2[0],-m2[1]]  
-            
+
         #movement p1
         x1+=x1_change
         y1+=y1_change
-
         #movement p2
         x2+=x2_change
         y2+=y2_change
 
         dis.fill(black)
-
         #create food piece on screen
         pg.draw.rect(dis, blue, [foodx, foody, 10, 10])
 
-        #create snake head position x and y p1
+        #nake head position x and y p1
         snake_head=[x1,y1]
-        #create snake head position x and y p2
+        #snake head position x and y p2
         snake2_head=[x2,y2]
-      
+
         #append to snake p1
         snake_list.append(snake_head)
          #append to snake p2
@@ -375,7 +373,7 @@ def game2_loop():
         snake2(snake_list,snake2_list)
         #set score as -1 because snake it 1 greater than beginning score | two player
         score2(snake_length-1,snake2_length-1)
-       
+
         #speed up  
         if (snake_length-1) == dif_interval or (snake2_length-1)==dif_interval:
             #future functionality for difficulty
