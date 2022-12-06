@@ -1,4 +1,5 @@
 from cmath import rect
+from operator import truediv
 import random
 import pygame as pg
 
@@ -108,9 +109,7 @@ def menu():
 
 #function for whole game
 def game_loop():
-
-    #initiate variables
-
+    #initiate variable
     #set start point    (x1, y1 player one | x2, y2 player two)
     x1=dis_width/2
     y1=dis_height/2
@@ -234,9 +233,7 @@ def game_loop():
 
 #function for vs mode
 def game2_loop():
-
-    #initiate variables
-
+    #initiate variable
     #set start point    (x1, y1 player one | x2, y2 player two)
     x1=dis_width/2
     y1=dis_height/2
@@ -277,7 +274,7 @@ def game2_loop():
              }
     #player2
     move2_dict= {
-             pg.K_a    : (-10, ),
+             pg.K_a    : (-10, 0),
              pg.K_d    : ( 10, 0),
              pg.K_w    : ( 0,-10),
              pg.K_s    : ( 0, 10)
@@ -290,7 +287,7 @@ def game2_loop():
 
     #loop containing game
     while not game2_over:
-
+    
         #create if statement for player 1 or 2 win
         while game2_close:
             dis.fill(white)
@@ -343,11 +340,6 @@ def game2_loop():
         x2+=x2_change
         y2+=y2_change
 
-        #detect out of bounds
-        if out_bounds(x1,y1,dis_width,dis_height) or out_bounds(x2,y2,dis_width,dis_height):
-            game2_close=True
-        
-
         dis.fill(black)
 
         #create food piece on screen
@@ -374,6 +366,10 @@ def game2_loop():
         game2_close=collision(snake_list,snake_head)
         #collision detection p2
         game2_close=collision(snake2_list,snake2_head)
+
+        #out of bounds
+        if out_bounds(x1,y1,dis_width,dis_height) or out_bounds(x2,y2,dis_width,dis_height):
+            game2_close=True
 
         #update snake sizes
         snake2(snake_list,snake2_list)
