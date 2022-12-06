@@ -36,6 +36,23 @@ def snake2(snake_list,snake2_list):
         pg.draw.rect(dis, white, [x[0], x[1], 10, 10])
     for x in snake2_list:
         pg.draw.rect(dis, green, [x[0], x[1], 10, 10])
+
+#function that returns movement updates based on key press
+def move(press, dict):
+        movement=dict.get(press)
+        return [movement[0], movement[1]]
+
+#function that detects collision with border   
+def collision(list,head):
+            for x in list[:-1]:
+                if x==head:
+                    return True
+            return False  
+
+#function detects out of bounds and returns bool based on resutl
+def out_bounds(x,y,w,h):
+            if x >= w or x < 0 or y >= h or y < 0:
+                return True
         
 #function for displaying score        
 def score(current_score):
@@ -62,25 +79,25 @@ def message(msg,color):
 def random_spot(size):
     return round(random.randrange(0, size - 30) / 10.0) *10
 
-#simplified game ticks with function
+#simplified game ticks with function(writeless)
 def next_tick():
     pg.display.update()
 
-
+#menu page
 def menu():
     
     start = False
     while not start:
 
         dis.fill(white)
-        message('Press SPACE To Start. Press V-VS For 2 Player',blue)
+        message('Press "1" To Start. Press "2" For 2 Player',blue)
         next_tick()
         for event in pg.event.get():
             if event.type == pg.KEYDOWN:
-                if event.key==pg.K_SPACE:
+                if event.key==pg.K_1:
                     start=True
                     game_loop()
-                elif event.key==pg.K_v:
+                elif event.key==pg.K_2:
                     start=True
                     game2_loop()
             if event.type == pg.QUIT:
@@ -114,10 +131,10 @@ def game_loop():
 
     #keybind dictionary
     move_dict = {
-             pg.K_LEFT : [-10, 0],
-             pg.K_RIGHT: [ 10, 0],
-             pg.K_UP   : [ 0,-10],
-             pg.K_DOWN : [ 0, 10],
+             pg.K_LEFT : (-10, 0),
+             pg.K_RIGHT: ( 10, 0),
+             pg.K_UP   : ( 0,-10),
+             pg.K_DOWN : ( 0, 10),
              }
 
     #set x and y for first food piece
@@ -152,19 +169,18 @@ def game_loop():
                 game_over=True   
             if event.type==pg.KEYDOWN:
                 if event.key in move_dict.keys():
-                    if move_dict.get(event.key) != last_move: #check to make sure you wont step on yourself
-                        movement=move_dict.get(event.key)
-                        last_move=[-movement[0],-movement[1]]
-                        x1_change=movement[0]  
-                        y1_change=movement[1]  
+                    m = move(event.key, move_dict)
+                    if m!=last_move: #so you cant step on yourself
+                        x1_change=m[0]  
+                        y1_change=m[1]  
+                        last_move=[-m[0],-m[1]]
           
         #movement
         x1+=x1_change
         y1+=y1_change
 
         #detect out of bounds 
-        if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
-            game_close = True
+        game_close = out_bounds(x1,y1,dis_width,dis_height)
 
         dis.fill(black)
 
@@ -172,9 +188,7 @@ def game_loop():
         pg.draw.rect(dis, blue, [foodx, foody, 10, 10])
 
         #create snake head position x and y
-        snake_head=[]
-        snake_head.append(x1)
-        snake_head.append(y1)
+        snake_head=[x1,y1]
 
         #append to snake
         snake_list.append(snake_head)
@@ -256,17 +270,17 @@ def game2_loop():
 
     #keybind dictionary
     move_dict = {
-             pg.K_LEFT : [-10, 0],
-             pg.K_RIGHT: [ 10, 0],
-             pg.K_UP   : [ 0,-10],
-             pg.K_DOWN : [ 0, 10],
+            pg.K_LEFT : (-10, 0),
+            pg.K_RIGHT: ( 10, 0),
+            pg.K_UP   : ( 0,-10),
+            pg.K_DOWN : ( 0, 10),
              }
     #player2
     move2_dict= {
-             pg.K_a    : [-10, 0],
-             pg.K_d    : [ 10, 0],
-             pg.K_w    : [ 0,-10],
-             pg.K_s    : [ 0, 10]
+             pg.K_a    : (-10, ),
+             pg.K_d    : ( 10, 0),
+             pg.K_w    : ( 0,-10),
+             pg.K_s    : ( 0, 10)
              }
 
     #set x and y for first food piece
@@ -280,12 +294,14 @@ def game2_loop():
         #create if statement for player 1 or 2 win
         while game2_close:
             dis.fill(white)
+
+            #determine winner
             if snake_length > snake2_length:  
-                message("White Wins! Press C To Play again",red)
+                message("White Wins! Press 'c' To Play again",red)
             elif snake_length < snake2_length:
-                message("Green Wins! Press C To Play again",red)
+                message("Green Wins! Press 'c' To Play again",red)
             else:
-                message("Tie! Press C-Play again",red)
+                message("Tie! Press 'c' Play again",red)
             next_tick()
 
             #keystrokes options
@@ -300,25 +316,25 @@ def game2_loop():
                         game2_over=True
                         game2_close=False
 
-        #key strokes p1
+        #key strokes
         for event in pg.event.get():
-            #actions
+            #actions        
             if event.type==pg.QUIT:
                 game2_over=True
             if event.type==pg.KEYDOWN:
                 if event.key in move_dict.keys():
-                    if move_dict.get(event.key) != last_move: #check to make sure you wont step on yourself
-                        movement=move_dict.get(event.key)
-                        last_move=[-movement[0],-movement[1]]
-                        x1_change=movement[0]  
-                        y1_change=movement[1]  
-                if event.key in move2_dict.keys():
-                    if move2_dict.get(event.key) != last2_move: #check to make sure you wont step on yourself p2
-                        movement2=move2_dict.get(event.key)
-                        last2_move=[-movement2[0],-movement2[1]]
-                        x2_change=movement2[0]  
-                        y2_change=movement2[1]  
-          
+                        m = move(event.key, move_dict)
+                        if m!=last_move: #so you cant step on yourself
+                            x1_change=m[0]  
+                            y1_change=m[1]  
+                            last_move=[-m[0],-m[1]]
+                if event.key in move2_dict.keys():    
+                    m2 = move(event.key, move2_dict)
+                    if m2!=last2_move: #so you cant step on yourself
+                        x2_change=m2[0]  
+                        y2_change=m2[1]  
+                        last2_move=[-m2[0],-m2[1]]  
+            
         #movement p1
         x1+=x1_change
         y1+=y1_change
@@ -327,13 +343,10 @@ def game2_loop():
         x2+=x2_change
         y2+=y2_change
 
-        #detect out of bounds p1
-        if x1 >= dis_width or x1 < 0 or y1 >= dis_height or y1 < 0:
-            game2_close = True
+        #detect out of bounds
+        if out_bounds(x1,y1,dis_width,dis_height) or out_bounds(x2,y2,dis_width,dis_height):
+            game2_close=True
         
-        #detect out of bounds p2
-        if x2 >= dis_width or x2 < 0 or y2 >= dis_height or y2 < 0:
-            game2_close = True
 
         dis.fill(black)
 
@@ -341,45 +354,31 @@ def game2_loop():
         pg.draw.rect(dis, blue, [foodx, foody, 10, 10])
 
         #create snake head position x and y p1
-        snake_head=[]
-        snake_head.append(x1)
-        snake_head.append(y1)
-
+        snake_head=[x1,y1]
         #create snake head position x and y p2
-        snake2_head=[]
-        snake2_head.append(x2)
-        snake2_head.append(y2)
-
+        snake2_head=[x2,y2]
+      
         #append to snake p1
         snake_list.append(snake_head)
-
          #append to snake p2
         snake2_list.append(snake2_head)
 
         #keep snake length accurate p1
         if len(snake_list) > snake_length :
             del snake_list[0]
-
          #keep snake length accurate p2
         if len(snake2_list) > snake2_length :
             del snake2_list[0]
 
         #collision detection p1
-        for x in snake_list[:-1]:
-            if x==snake_head:
-                game2_close=True
-
+        game2_close=collision(snake_list,snake_head)
         #collision detection p2
-        for x in snake2_list[:-1]:
-            if x==snake2_head:
-                game2_close=True
+        game2_close=collision(snake2_list,snake2_head)
 
-        #call snake function with snake size parameter p1
+        #update snake sizes
         snake2(snake_list,snake2_list)
-
         #set score as -1 because snake it 1 greater than beginning score | two player
         score2(snake_length-1,snake2_length-1)
-       
        
         #speed up  
         if (snake_length-1) == dif_interval or (snake2_length-1)==dif_interval:
@@ -405,7 +404,6 @@ def game2_loop():
 
             #grow snake
             snake2_length+=1
-            
             
         #speed
         clock.tick(snake_speed)  
